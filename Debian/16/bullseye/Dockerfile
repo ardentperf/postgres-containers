@@ -60,12 +60,18 @@ RUN set -xe; \
 WORKDIR /usr/src/pgsentinel
 # Install packages to build pgsentinel
 RUN set -xe; \
-    apt-get update; apt-get install -y --no-install-recommends build-essential curl postgresql-server-dev-${PG_MAJOR}; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+      build-essential \
+      curl \
+      postgresql-server-dev-${PG_MAJOR}; \
     curl -o pgsentinel.tar.gz -L https://github.com/pgsentinel/pgsentinel/archive/0218c2147daab0d2dbbf08433cb480163d321839.tar.gz; \
     tar -xzf pgsentinel.tar.gz --strip-components=1; \
     cd src; \
     make; \
-    make install
+    make install; \
+    rm -fr /tmp/* ; \
+    rm -rf /var/lib/apt/lists/*
 
 
 # Change the uid of postgres to 26
