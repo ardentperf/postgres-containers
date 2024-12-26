@@ -52,6 +52,22 @@ RUN set -xe; \
 	pip3 install  --no-deps -r requirements.txt; \
 	rm -rf /var/lib/apt/lists/*;
 
+# NOTE: this is intended for testing only, not for production use. the imate
+# is very large because it includes the full toolchain for building pgsentinel
+# from source.
+
+# Set the working directory in the container
+WORKDIR /usr/src/pgsentinel
+# Install packages to build pgsentinel
+RUN set -xe; \
+    apt-get update; apt-get install -y --no-install-recommends build-essential curl postgresql-server-dev-${PG_MAJOR}; \
+    curl -o pgsentinel.tar.gz -L https://github.com/pgsentinel/pgsentinel/archive/0218c2147daab0d2dbbf08433cb480163d321839.tar.gz; \
+    tar -xzf pgsentinel.tar.gz --strip-components=1; \
+    cd src; \
+    make; \
+    make install
+
+
 # Change the uid of postgres to 26
 RUN usermod -u 26 postgres
 USER 26
